@@ -1,20 +1,19 @@
 # Калькулятор зарплаты
 
-Статическое веб-приложение. Один файл `index.html` без сборки и зависимостей.
+Статическая страница: один файл `index.html`, без сборки и внешних зависимостей.
 
-## Быстрый старт
+## Что умеет
+- 4 режима: Заместитель директора, Повар, Кассир/Бариста/Зал, Общий подсчёт.
+- Разбивка по надбавкам и коэффициентам, копирование расчёта в буфер.
+- Светлая/тёмная тема, адаптив под телефон.
+
+## Локально
 Открой `index.html` в браузере.
 
-## Загрузка в GitHub
-```bash
-git init
-git branch -M main
-git add index.html README.md .gitignore
-git commit -m "Initial commit: salary calculator"
-git remote add origin https://github.com/YOUR_USER/salary-calculator.git
-git push -u origin main
-```
+## Где лежит логика
+В `index.html` → `<script>`:
+- `ROLES` — схема полей (подписи, подсказки, единицы, зависимости Да/Нет);
+- `CALC` — формулы расчёта по каждой должности.
 
-## Публикация на GitHub Pages
-Settings → Pages → *Deploy from a branch* → Branch: `main`, Folder: `/ (root)` → Save.
-Сайт будет по адресу: `https://YOUR_USER.github.io/salary-calculator/`.
+## Хостинг
+Сайт развёрнут на RelaxNet (static builder) из этого репозитория.
