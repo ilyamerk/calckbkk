@@ -4,308 +4,242 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Калькулятор зарплаты</title>
-  <meta name="description" content="Посчитай зарплату за смену и премии за месяц по своей должности." />
-  <meta name="theme-color" content="#F6F1EA" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#14110E" media="(prefers-color-scheme: dark)" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237A553A'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='17' font-weight='700' text-anchor='middle' fill='%23fff'%3E%E2%82%BD%3C/text%3E%3C/svg%3E" />
+  <meta name="description" content="Расчёт зарплаты за смену и премии за месяц по должности." />
+  <meta name="theme-color" content="#E7E7E2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#151613" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231C1D1A'/%3E%3Ctext x='16' y='22.5' font-family='Arial' font-size='18' font-weight='700' text-anchor='middle' fill='%23fff'%3E%E2%82%BD%3C/text%3E%3C/svg%3E" />
+  <link rel="preload" href="fonts/golos-text-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <style>
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/golos-text-cyrillic-400-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/golos-text-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/golos-text-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/golos-text-cyrillic-500-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/golos-text-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/golos-text-latin-ext-500-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/golos-text-cyrillic-600-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/golos-text-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+    @font-face{font-family:"Golos Text";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/golos-text-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-cyrillic-400-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-mono-cyrillic-600-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+    @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-mono-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
     :root{
-      --bg:#F6F1EA;
-      --bg-2:#FBF7F2;
-      --surface:#FFFFFF;
-      --surface-2:#FAF6F1;
-      --text:#221B15;
-      --muted:#7A6E63;
-      --line:#E9E1D7;
-      --line-strong:#D9CDBF;
-      --accent:#7A553A;
-      --accent-hover:#684730;
-      --accent-soft:#F3EADF;
+      --page:#E7E7E2;
+      --panel:#F6F6F2;
+      --field:#FFFFFF;
+      --ink:#1C1D1A;
+      --muted:#696B64;
+      --rule:#D4D5CE;
+      --rule-strong:#B9BBB2;
+      --accent:#5B3B27;
       --accent-ink:#FFFFFF;
-      --ok:#2F7D4F;
-      --ok-soft:#E6F3EB;
-      --danger:#B4412F;
-      --danger-soft:#FBEAE6;
-      --shadow:0 1px 2px rgba(34,27,21,.04),0 8px 24px rgba(34,27,21,.06);
-      --shadow-lg:0 2px 4px rgba(34,27,21,.05),0 18px 40px rgba(34,27,21,.10);
-      --ring:0 0 0 4px rgba(122,85,58,.18);
-      --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:24px;
-      --font:system-ui,-apple-system,"Segoe UI",Roboto,"Inter","Helvetica Neue",Arial,sans-serif;
+      --paper:#FFFFFF;
+      --paper-ink:#232320;
+      --paper-muted:#7A7A73;
+      --danger:#B3261E;
+      --danger-bg:#FBEDEB;
+      --sans:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+      --r:6px;
+      --h:44px;
       color-scheme:light;
     }
     @media (prefers-color-scheme: dark){
-      :root:not([data-theme="light"]){
-        --bg:#14110E; --bg-2:#1A1612; --surface:#1F1A16; --surface-2:#26201B;
-        --text:#F3ECE4; --muted:#A89A8C; --line:#342C25; --line-strong:#4A4037;
-        --accent:#D3A57F; --accent-hover:#E0B693; --accent-soft:#2E251E; --accent-ink:#1A140F;
-        --ok:#6CC892; --ok-soft:#1C2B22; --danger:#F08A78; --danger-soft:#33201C;
-        --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
-        --shadow-lg:0 2px 4px rgba(0,0,0,.3),0 18px 40px rgba(0,0,0,.35);
-        --ring:0 0 0 4px rgba(211,165,127,.22);
+      :root{
+        --page:#151613; --panel:#1D1E1B; --field:#24251F; --ink:#ECECE6; --muted:#9C9E95;
+        --rule:#33352F; --rule-strong:#4A4C44; --accent:#D2A27C; --accent-ink:#1A1410;
+        --paper:#F1EFE8; --paper-ink:#232320; --paper-muted:#7A7A73;
+        --danger:#F08A80; --danger-bg:#3A201D;
         color-scheme:dark;
       }
     }
-    :root[data-theme="dark"]{
-      --bg:#14110E; --bg-2:#1A1612; --surface:#1F1A16; --surface-2:#26201B;
-      --text:#F3ECE4; --muted:#A89A8C; --line:#342C25; --line-strong:#4A4037;
-      --accent:#D3A57F; --accent-hover:#E0B693; --accent-soft:#2E251E; --accent-ink:#1A140F;
-      --ok:#6CC892; --ok-soft:#1C2B22; --danger:#F08A78; --danger-soft:#33201C;
-      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
-      --shadow-lg:0 2px 4px rgba(0,0,0,.3),0 18px 40px rgba(0,0,0,.35);
-      --ring:0 0 0 4px rgba(211,165,127,.22);
-      color-scheme:dark;
-    }
 
     *,*::before,*::after{box-sizing:border-box}
-    html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-    body{
-      margin:0; min-height:100dvh;
-      background:var(--bg);
-      background-image:radial-gradient(1200px 500px at 85% -10%, var(--accent-soft), transparent 60%);
-      background-attachment:fixed;
-      color:var(--text); font-family:var(--font); font-size:16px; line-height:1.5;
-      -webkit-font-smoothing:antialiased;
-    }
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;min-height:100dvh;background:var(--page);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
     button,input{font:inherit;color:inherit}
-    button{cursor:pointer}
-    :focus-visible{outline:none;box-shadow:var(--ring)}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    h1,h2,h3,p{margin:0}
 
-    /* ===== Header ===== */
-    .header{position:sticky;top:0;z-index:30;backdrop-filter:saturate(160%) blur(10px);-webkit-backdrop-filter:saturate(160%) blur(10px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
-    body.scrolled .header{border-bottom-color:var(--line)}
-    .header-inner{max-width:1120px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px}
-    .logo{width:36px;height:36px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:19px;flex:none}
-    .brand{font-weight:750;font-size:17px;letter-spacing:-.01em}
-    .brand small{display:block;font-weight:500;font-size:13px;color:var(--muted);letter-spacing:0}
-    .theme-btn{margin-left:auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--muted);transition:color .2s,border-color .2s}
-    .theme-btn:hover{color:var(--text);border-color:var(--line-strong)}
-    .theme-btn svg{width:18px;height:18px}
+    .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 
-    /* ===== Layout ===== */
-    .container{max-width:1120px;margin:0 auto;padding:24px 20px 120px}
-    .hero{margin:8px 0 28px}
-    .hero h1{margin:0 0 8px;font-size:clamp(28px,4.4vw,42px);line-height:1.1;letter-spacing:-.025em;font-weight:800}
-    .hero p{margin:0;color:var(--muted);font-size:clamp(15px,1.8vw,17px);max-width:560px}
-    .layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
-    @media (max-width:960px){.layout{grid-template-columns:minmax(0,1fr)}}
+    /* ===== Шапка ===== */
+    .top{padding:28px 0 22px}
+    .top h1{font-size:26px;font-weight:600;letter-spacing:-.015em;line-height:1.2}
+    .top p{color:var(--muted);margin-top:6px;max-width:560px}
 
-    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--shadow);padding:24px}
-    @media (max-width:560px){.card{padding:18px;border-radius:var(--r-lg)}}
-    .step{display:flex;align-items:center;gap:10px;margin:0 0 16px}
-    .step-num{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px;display:grid;place-items:center;flex:none}
-    .step h2{margin:0;font-size:18px;font-weight:750;letter-spacing:-.01em}
-    .stack>*+*{margin-top:16px}
+    /* ===== Должности ===== */
+    .roles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:20px}
+    @media (max-width:860px){.roles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .role{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px 14px;min-height:68px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel);transition:border-color .12s,background .12s}
+    .role:hover{border-color:var(--rule-strong)}
+    .role b{font-weight:600;font-size:15px;line-height:1.3}
+    .role span{font-size:13px;color:var(--muted);line-height:1.3}
+    .role[aria-checked="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+    .role[aria-checked="true"] span{color:color-mix(in srgb,var(--page) 70%,var(--ink))}
 
-    /* ===== Roles ===== */
-    .roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    @media (max-width:560px){.roles{grid-template-columns:minmax(0,1fr)}}
-    .role{position:relative;display:flex;gap:14px;align-items:flex-start;text-align:left;padding:16px;border-radius:var(--r-lg);border:1.5px solid var(--line);background:var(--surface-2);transition:border-color .18s,background .18s,transform .12s,box-shadow .18s}
-    .role:hover{border-color:var(--line-strong);transform:translateY(-1px)}
-    .role:active{transform:translateY(0)}
-    .role[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
-    .role-ico{width:42px;height:42px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);flex:none}
-    .role[aria-checked="true"] .role-ico{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-    .role-ico svg{width:22px;height:22px}
-    .role-title{display:block;font-weight:700;font-size:15.5px;line-height:1.3}
-    .role-desc{display:block;color:var(--muted);font-size:13.5px;line-height:1.4;margin-top:3px}
-    .role-check{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;transition:all .18s}
-    .role[aria-checked="true"] .role-check{background:var(--accent);border-color:var(--accent)}
-    .role-check svg{width:12px;height:12px;color:var(--accent-ink);opacity:0;transition:opacity .15s}
-    .role[aria-checked="true"] .role-check svg{opacity:1}
+    /* ===== Сетка ===== */
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start;padding-bottom:64px}
+    @media (max-width:960px){.layout{grid-template-columns:minmax(0,1fr);padding-bottom:110px}}
 
-    /* ===== Form ===== */
-    .form-card{margin-top:20px;animation:rise .28s ease both}
-    .form-card[hidden]{display:none}
-    @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-    .group-title{margin:24px 0 12px;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-    .group-title:first-of-type{margin-top:4px}
-    .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-    .fields .full{grid-column:1/-1}
-    @media (max-width:640px){.fields{grid-template-columns:minmax(0,1fr)}}
+    /* ===== Форма ===== */
+    .panel{background:var(--panel);border:1px solid var(--rule);border-radius:var(--r)}
+    .form{padding:4px 24px 24px}
+    @media (max-width:560px){.form{padding:2px 16px 18px}}
+    .intro{padding:40px 24px;color:var(--muted);text-align:center}
+    .group{padding-top:20px}
+    .group h2{font-size:13px;font-weight:600;color:var(--muted);padding-bottom:8px}
 
-    .field{display:flex;flex-direction:column;gap:8px;min-width:0}
-    .field[hidden]{display:none}
-    .field.reveal{animation:rise .22s ease both}
-    .field-head{display:flex;align-items:flex-start;gap:8px}
-    .field-label{font-weight:600;font-size:14.5px;line-height:1.35;flex:1}
-    .hint-btn{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line-strong);background:transparent;color:var(--muted);font-size:12px;font-weight:700;display:grid;place-items:center;padding:0;transition:all .15s;margin-top:-1px}
-    .hint-btn:hover,.hint-btn[aria-expanded="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-    .hint{font-size:13.5px;line-height:1.45;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin:0}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) 260px;column-gap:28px;padding:12px 0;border-top:1px solid var(--rule)}
+    .row[hidden]{display:none}
+    .row-label{padding-top:11px;min-width:0}
+    .row-label label,.row-label .lbl{font-weight:500;line-height:1.35}
+    .q{display:inline-grid;place-items:center;width:18px;height:18px;margin-left:6px;vertical-align:1px;border:1px solid var(--rule-strong);border-radius:50%;background:transparent;color:var(--muted);font-size:11px;font-weight:600;line-height:1;padding:0}
+    .q:hover,.q[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+    .nw{white-space:nowrap}
+    .hint{margin-top:8px;font-size:13.5px;color:var(--muted);line-height:1.45;padding-left:10px;border-left:2px solid var(--rule-strong)}
     .hint[hidden]{display:none}
+    .row-ctrl{min-width:0}
+    .err{display:none;margin-top:6px;color:var(--danger);font-size:13px;font-weight:500}
+    .row.invalid .err{display:block}
+    @media (max-width:640px){
+      .row{grid-template-columns:minmax(0,1fr);row-gap:10px}
+      .row-label{padding-top:0}
+    }
 
-    .input-wrap{position:relative;display:flex;align-items:center}
-    .input{width:100%;height:50px;padding:0 48px 0 16px;border-radius:var(--r-md);border:1.5px solid var(--line);background:var(--surface);font-size:16.5px;font-weight:600;font-variant-numeric:tabular-nums;transition:border-color .15s,box-shadow .15s}
-    .input::placeholder{color:var(--muted);opacity:.55;font-weight:500}
-    .input:hover{border-color:var(--line-strong)}
-    .input:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring)}
-    .unit{position:absolute;right:16px;color:var(--muted);font-weight:600;font-size:15px;pointer-events:none}
-    .field.invalid .input{border-color:var(--danger);background:var(--danger-soft)}
-    .err{display:none;color:var(--danger);font-size:13px;font-weight:600;margin:-2px 0 0}
-    .field.invalid .err{display:block}
+    /* поле с единицей */
+    .num{position:relative}
+    .num input{width:100%;height:var(--h);padding:0 52px 0 12px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--field);font-family:var(--mono);font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
+    .num input::placeholder{color:var(--muted);opacity:.5}
+    .num input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+    .num .u{position:absolute;right:0;top:0;bottom:0;width:44px;display:grid;place-items:center;border-left:1px solid var(--rule);color:var(--muted);font-size:13px;pointer-events:none}
+    .row.invalid .num input,.row.invalid .stepper,.row.invalid .seg{border-color:var(--danger);background:var(--danger-bg)}
 
-    /* stepper */
-    .stepper{display:grid;grid-template-columns:50px minmax(0,1fr) 50px;gap:8px}
-    .stepper .input{text-align:center;padding:0 40px 0 16px}
-    .step-btn{height:50px;border-radius:var(--r-md);border:1.5px solid var(--line);background:var(--surface-2);font-size:22px;font-weight:500;line-height:1;color:var(--text);transition:all .15s;user-select:none}
-    .step-btn:hover{border-color:var(--line-strong);background:var(--accent-soft)}
-    .step-btn:active{transform:scale(.97)}
-    .chips{display:flex;flex-wrap:wrap;gap:6px}
-    .chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);font-size:13.5px;font-weight:600;color:var(--muted);transition:all .15s}
-    .chip:hover{color:var(--text);border-color:var(--line-strong)}
-    .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+    /* степпер */
+    .stepper{display:grid;grid-template-columns:var(--h) minmax(0,1fr) var(--h);height:var(--h);border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--field);overflow:hidden}
+    .stepper:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+    .stepper button{border:0;background:transparent;font-size:20px;line-height:1;color:var(--ink)}
+    .stepper button:first-child{border-right:1px solid var(--rule)}
+    .stepper button:last-child{border-left:1px solid var(--rule)}
+    .stepper button:hover{background:var(--panel)}
+    .stepper button:active{background:var(--rule)}
+    .sv{display:flex;align-items:center;justify-content:center;gap:6px;cursor:text}
+    .sv input{width:3ch;min-width:2ch;max-width:100%;border:0;background:transparent;padding:0;font-family:var(--mono);font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
+    .sv input:focus{outline:none}
+    .sv input::placeholder{color:var(--muted);opacity:.5}
+    .sv .u{color:var(--muted);font-size:13px}
+    .presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:6px}
+    .presets button{height:30px;border:1px solid var(--rule);border-radius:var(--r);background:transparent;font-family:var(--mono);font-size:13px;color:var(--muted)}
+    .presets button:hover{border-color:var(--rule-strong);color:var(--ink)}
+    .presets button.on{background:var(--ink);border-color:var(--ink);color:var(--page)}
 
-    /* segmented yes/no */
-    .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:var(--r-md);background:var(--surface-2);border:1.5px solid var(--line)}
-    .seg button{height:40px;border:0;border-radius:10px;background:transparent;font-weight:650;font-size:15px;color:var(--muted);transition:all .15s}
-    .seg button:hover{color:var(--text)}
-    .seg button[aria-checked="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.06)}
-    .seg button[data-v="yes"][aria-checked="true"]{color:var(--ok)}
-    .field.invalid .seg{border-color:var(--danger);background:var(--danger-soft)}
+    /* да / нет */
+    .seg{display:grid;grid-template-columns:1fr 1fr;height:var(--h);border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--field);overflow:hidden}
+    .seg button{border:0;background:transparent;font-weight:500;font-size:14px;color:var(--muted)}
+    .seg button+button{border-left:1px solid var(--rule)}
+    .seg button:hover{color:var(--ink)}
+    .seg button[aria-checked="true"]{background:var(--ink);color:var(--page)}
 
-    /* ===== Buttons ===== */
-    .actions{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
-    .btn{height:52px;padding:0 22px;border-radius:999px;border:1.5px solid transparent;background:var(--accent);color:var(--accent-ink);font-weight:750;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .08s,box-shadow .15s}
-    .btn:hover{background:var(--accent-hover)}
+    /* кнопки */
+    .actions{display:flex;gap:8px;margin-top:20px;padding-top:20px;border-top:1px solid var(--rule)}
+    .btn{height:48px;padding:0 20px;border:1px solid transparent;border-radius:var(--r);background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:15px}
+    .btn:hover{filter:brightness(1.08)}
     .btn:active{transform:translateY(1px)}
-    .btn svg{width:18px;height:18px}
-    .btn.primary{flex:1 1 220px;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 30%,transparent)}
-    .btn.ghost{background:var(--surface);color:var(--text);border-color:var(--line)}
-    .btn.ghost:hover{border-color:var(--line-strong);background:var(--surface-2)}
-    .btn.ghost[disabled]{opacity:.5;cursor:not-allowed}
+    .btn.main{flex:1}
+    .btn.plain{background:transparent;color:var(--ink);border-color:var(--rule-strong)}
+    .btn.plain:hover{filter:none;background:var(--page)}
 
-    /* ===== Result ===== */
-    .result{position:sticky;top:84px}
-    @media (max-width:960px){.result{position:static}}
-    .result-card{padding:0;overflow:hidden}
-    .result-top{padding:24px;background:linear-gradient(160deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 78%,#000) 100%);color:#fff}
-    :root[data-theme="dark"] .result-top{color:var(--accent-ink)}
-    @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .result-top{color:var(--accent-ink)}}
-    .result-label{font-size:13.5px;font-weight:600;opacity:.85}
-    .result-total{font-size:clamp(34px,5vw,44px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
-    .result-sub{font-size:13.5px;opacity:.85;margin-top:6px}
-    .result-body{padding:8px 24px 22px}
-    .empty{padding:36px 24px;text-align:center;color:var(--muted)}
-    .empty-ico{width:56px;height:56px;margin:0 auto 14px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
-    .empty-ico svg{width:26px;height:26px}
-    .empty b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
-    .empty.error .empty-ico{background:var(--danger-soft);color:var(--danger)}
-    .r-sec{margin-top:16px}
-    .r-sec h3{margin:0 0 4px;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-    .r-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
-    .r-row:last-child{border-bottom:0}
-    .r-row span{font-size:14px;line-height:1.35}
-    .r-row small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
-    .r-row strong{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:15px}
-    .r-row strong.zero{color:var(--muted);font-weight:600}
-    .r-row strong.plus{color:var(--ok)}
-    .r-row.total{border-top:1.5px solid var(--line);border-bottom:0;margin-top:4px;padding-top:14px}
-    .r-row.total span,.r-row.total strong{font-weight:800;font-size:16px}
-    .result-actions{padding:0 24px 24px}
-    .result-actions .btn{width:100%}
-    .disclaimer{font-size:12.5px;color:var(--muted);margin:14px 4px 0;line-height:1.45}
+    /* ===== Чек ===== */
+    .side{position:sticky;top:20px}
+    @media (max-width:960px){.side{position:static}}
+    .receipt-wrap{filter:drop-shadow(0 1px 1px rgba(0,0,0,.08)) drop-shadow(0 6px 14px rgba(0,0,0,.08));padding-bottom:10px}
+    .receipt{position:relative;background:var(--paper);color:var(--paper-ink);font-family:var(--mono);font-size:13px;line-height:1.5;padding:22px 20px 14px}
+    .receipt::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:10px;
+      background:linear-gradient(135deg,var(--paper) 50%,transparent 50%) 0 0/10px 10px repeat-x,
+                 linear-gradient(-135deg,var(--paper) 50%,transparent 50%) 0 0/10px 10px repeat-x}
+    .receipt.print{animation:print .7s cubic-bezier(.2,.7,.2,1) both}
+    @keyframes print{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 -12px 0)}}
+    .rc-c{text-align:center}
+    .rc-title{font-weight:600;letter-spacing:.08em}
+    .rc-m{color:var(--paper-muted)}
+    .rc-cut{border:0;border-top:1px dashed #A9A9A2;margin:12px 0}
+    .rc-dbl{border:0;border-top:3px double var(--paper-ink);margin:12px 0}
+    .rc-sec{font-weight:600;margin-bottom:2px}
+    .rc-row{display:flex;align-items:baseline;gap:6px}
+    .rc-row .l{flex:0 1 auto}
+    .rc-row .d{flex:1;border-bottom:1px dotted #B4B4AD;transform:translateY(-4px);min-width:12px}
+    .rc-row .v{flex:none;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .rc-row.b .l,.rc-row.b .v{font-weight:600}
+    .rc-note{color:var(--paper-muted);font-size:12px;padding-left:12px;margin-bottom:4px}
+    .rc-total{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-weight:600;text-align:right}
+    .rc-total .rc-m{font-weight:400;font-size:12px}
+    .rc-total .v{font-size:26px;letter-spacing:-.02em;white-space:nowrap}
+    .rc-empty{padding:24px 0 18px;color:var(--paper-muted)}
+    .rc-err{color:#B3261E;font-weight:600}
+    .side-actions{margin-top:16px}
+    .side-actions .btn{width:100%}
+    .side-note{margin-top:12px;font-size:12.5px;color:var(--muted)}
 
-    /* ===== Mobile action bar ===== */
-    .mbar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:none;transform:translateY(110%);transition:transform .25s ease}
-    .mbar.show{transform:none}
+    /* ===== Мобильная панель ===== */
+    .mbar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--rule);display:none}
     .mbar .btn{width:100%}
-    @media (max-width:960px){.mbar{display:block}}
+    @media (max-width:960px){.mbar.show{display:block}}
 
-    /* ===== Toast ===== */
-    .toast{position:fixed;left:50%;bottom:24px;z-index:60;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--text);color:var(--bg);padding:12px 18px;border-radius:999px;font-weight:600;font-size:14.5px;box-shadow:var(--shadow-lg);transition:opacity .2s,transform .2s;max-width:calc(100vw - 32px);text-align:center}
+    .toast{position:fixed;left:50%;bottom:24px;z-index:30;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--ink);color:var(--page);padding:10px 16px;border-radius:var(--r);font-size:14px;font-weight:500;transition:opacity .15s,transform .15s}
     .toast.show{opacity:1;transform:translate(-50%,0)}
-    @media (max-width:960px){.toast{bottom:96px}}
+    @media (max-width:960px){.toast{bottom:84px}}
 
-    .footer{max-width:1120px;margin:0 auto;padding:0 20px 32px;color:var(--muted);font-size:13px}
-
-    @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+    @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-inner">
-      <div class="logo" aria-hidden="true">₽</div>
-      <div class="brand">Калькулятор зарплаты<small>смена · премии · месяц</small></div>
-      <button class="theme-btn" id="themeBtn" type="button" aria-label="Сменить тему" title="Сменить тему">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-      </button>
-    </div>
-  </header>
+  <div class="wrap">
+    <header class="top">
+      <h1>Калькулятор зарплаты</h1>
+      <p>Выбери должность и заполни показатели — расчёт появится в чеке.</p>
+    </header>
 
-  <div class="container">
-    <section class="hero">
-      <h1>Сколько ты заработаешь?</h1>
-      <p>Выбери должность, введи показатели смены или месяца, и калькулятор покажет итоговую сумму с разбивкой по надбавкам.</p>
-    </section>
+    <div class="roles" role="radiogroup" aria-label="Должность" id="roles">
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="zam"><b>Заместитель директора</b><span>премия за месяц</span></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="povar"><b>Повар</b><span>зарплата за смену</span></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="others"><b>Кассир, бариста, зал</b><span>а также ст. кассир и повар-универсал</span></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="general"><b>Общий подсчёт</b><span>по ставке на месяц</span></button>
+    </div>
 
     <div class="layout">
-      <main>
-        <!-- ШАГ 1: роль -->
-        <section class="card">
-          <div class="step"><span class="step-num">1</span><h2>Твоя должность</h2></div>
-          <div class="roles" role="radiogroup" aria-label="Должность" id="roles">
-            <button type="button" class="role" role="radio" aria-checked="false" data-role="zam">
-              <span class="role-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
-              <span><span class="role-title">Заместитель директора</span><span class="role-desc">Премия за месяц по KPI лавки</span></span>
-              <span class="role-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
-            </button>
-            <button type="button" class="role" role="radio" aria-checked="false" data-role="povar">
-              <span class="role-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.9A4 4 0 0 1 7 6.1a5 5 0 0 1 10 0 4 4 0 0 1 1 7.8V20H6z"/><path d="M6 17h12"/></svg></span>
-              <span><span class="role-title">Повар</span><span class="role-desc">Ставка + надбавки за час, расчёт за смену</span></span>
-              <span class="role-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
-            </button>
-            <button type="button" class="role" role="radio" aria-checked="false" data-role="others">
-              <span class="role-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.6a3.2 3.2 0 0 1 0 6.8"/><path d="M18 14.5a6 6 0 0 1 3 5.5"/></svg></span>
-              <span><span class="role-title">Кассир, бариста, зал</span><span class="role-desc">Ст. кассир · Кассир · Бариста · Работник торгового зала · Повар-универсал</span></span>
-              <span class="role-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
-            </button>
-            <button type="button" class="role" role="radio" aria-checked="false" data-role="general">
-              <span class="role-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></span>
-              <span><span class="role-title">Общий подсчёт</span><span class="role-desc">Сколько выйдет за месяц по ставке и графику</span></span>
-              <span class="role-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg></span>
-            </button>
-          </div>
-        </section>
-
-        <!-- ШАГ 2: поля (рендерятся из схемы) -->
-        <section class="card form-card" id="formCard" hidden>
-          <div class="step"><span class="step-num">2</span><h2 id="formTitle">Показатели</h2></div>
-          <form id="form" novalidate autocomplete="off"></form>
-          <div class="actions">
-            <button type="button" class="btn primary" id="calcBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>
-              Рассчитать
-            </button>
-            <button type="button" class="btn ghost" id="resetBtn">Очистить</button>
-          </div>
-        </section>
-      </main>
-
-      <aside class="result" id="resultWrap" aria-live="polite">
-        <div class="card result-card" id="result">
-          <div class="empty">
-            <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-            <b>Здесь будет результат</b>
-            Выбери должность и заполни поля
+      <main class="panel" id="panel">
+        <p class="intro" id="intro">Сначала выбери должность выше.</p>
+        <div id="formWrap" hidden>
+          <form class="form" id="form" novalidate autocomplete="off"></form>
+          <div class="form" style="padding-top:0">
+            <div class="actions" style="margin-top:0">
+              <button type="button" class="btn main" id="calcBtn">Рассчитать</button>
+              <button type="button" class="btn plain" id="resetBtn">Очистить</button>
+            </div>
           </div>
         </div>
-        <p class="disclaimer">Расчёт предварительный и носит справочный характер. Точную сумму уточняй у директора.</p>
+      </main>
+
+      <aside class="side" id="side" aria-live="polite">
+        <div class="receipt-wrap"><div class="receipt" id="receipt"></div></div>
+        <div class="side-actions" id="sideActions" hidden><button type="button" class="btn plain" id="copyBtn">Скопировать расчёт</button></div>
+        <p class="side-note">Расчёт предварительный. Точную сумму уточняй у директора.</p>
       </aside>
     </div>
   </div>
 
-  <footer class="footer">Калькулятор зарплаты</footer>
-
-  <div class="mbar" id="mbar"><button type="button" class="btn primary" id="calcBtnM">Рассчитать</button></div>
+  <div class="mbar" id="mbar"><button type="button" class="btn" id="calcBtnM">Рассчитать</button></div>
   <div class="toast" id="toast" role="status"></div>
 
   <script>
   (function(){
     'use strict';
 
-    /* ================= СХЕМА ПОЛЕЙ =================
-       type: num (число), step (число со степпером), yn (да/нет)
-       dep:  поле показывается и обязательно, только если указанное yn = "yes"            */
     const DIR = ' Эту информацию ты можешь уточнить у своего директора.';
     const ROLES = {
       zam: {
@@ -383,6 +317,7 @@
       }
     };
 
+
     /* ================= УТИЛИТЫ ================= */
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -396,112 +331,92 @@
 
     let state = { role:null, values:{}, last:null };
 
-    /* ================= РЕНДЕР ФОРМЫ ================= */
-    function fieldHTML(f){
-      const hintId = f.id + '_hint';
-      const head = `<div class="field-head"><label class="field-label" ${f.type!=='yn' ? `for="${f.id}"` : `id="${f.id}_lbl"`}>${esc(f.label)}</label>`
-        + (f.hint ? `<button type="button" class="hint-btn" aria-expanded="false" aria-controls="${hintId}" aria-label="Подсказка">?</button>` : '') + `</div>`
-        + (f.hint ? `<p class="hint" id="${hintId}" hidden>${esc(f.hint)}</p>` : '');
-      let ctrl = '';
-      if (f.type === 'yn'){
-        ctrl = `<div class="seg" role="radiogroup" aria-labelledby="${f.id}_lbl" data-yn="${f.id}">
-          <button type="button" role="radio" aria-checked="false" data-v="yes">Да</button>
-          <button type="button" role="radio" aria-checked="false" data-v="no">Нет / не знаю</button></div>`;
-      } else if (f.type === 'step'){
-        ctrl = `<div class="stepper">
-          <button type="button" class="step-btn" data-inc="-1" aria-label="Меньше">−</button>
-          <div class="input-wrap"><input class="input" id="${f.id}" inputmode="decimal" placeholder="${fmtNum(f.presets[1])}"><span class="unit">${f.unit}</span></div>
-          <button type="button" class="step-btn" data-inc="1" aria-label="Больше">+</button></div>
-          <div class="chips">${f.presets.map(p => `<button type="button" class="chip" data-preset="${p}">${fmtNum(p)} ${f.unit}</button>`).join('')}</div>`;
-      } else {
-        ctrl = `<div class="input-wrap"><input class="input" id="${f.id}" inputmode="decimal" placeholder="0"><span class="unit">${f.unit}</span></div>`;
-      }
-      return `<div class="field${f.full ? ' full' : ''}" data-id="${f.id}"${f.dep ? ' hidden' : ''}>${head}${ctrl}<p class="err"></p></div>`;
+    /* ================= ФОРМА ================= */
+    function ctrlHTML(f){
+      if (f.type === 'yn') return `<div class="seg" role="radiogroup" aria-labelledby="${f.id}_lbl" data-yn="${f.id}">
+          <button type="button" role="radio" aria-checked="false" data-v="yes">Да</button><button type="button" role="radio" aria-checked="false" data-v="no">Нет / не знаю</button></div>`;
+      if (f.type === 'step') return `<div class="stepper">
+          <button type="button" data-inc="-1" aria-label="Меньше">−</button>
+          <label class="sv"><input id="${f.id}" inputmode="decimal" placeholder="${fmtNum(f.presets[1])}"><span class="u">${f.unit}</span></label>
+          <button type="button" data-inc="1" aria-label="Больше">+</button></div>
+        <div class="presets">${f.presets.map(p => `<button type="button" data-preset="${p}">${fmtNum(p)}</button>`).join('')}</div>`;
+      return `<div class="num"><input id="${f.id}" inputmode="decimal" placeholder="0"><span class="u">${f.unit}</span></div>`;
     }
-
+    function rowHTML(f){
+      // последнее слово + «?» склеены, чтобы значок не уезжал на отдельную строку
+      const q = f.hint ? `<button type="button" class="q" aria-expanded="false" aria-controls="${f.id}_hint" aria-label="Подсказка">?</button>` : '';
+      const words = f.label.split(' '), last = words.pop();
+      const text = `${esc(words.join(' '))} <span class="nw">${esc(last)}${q}</span>`;
+      const lbl = f.type === 'yn' ? `<span class="lbl" id="${f.id}_lbl">${text}</span>` : `<label for="${f.id}">${text}</label>`;
+      const hint = f.hint ? `<p class="hint" id="${f.id}_hint" hidden>${esc(f.hint)}</p>` : '';
+      return `<div class="row" data-id="${f.id}"${f.dep ? ' hidden' : ''}>
+        <div class="row-label">${lbl}${hint}</div>
+        <div class="row-ctrl">${ctrlHTML(f)}<p class="err"></p></div></div>`;
+    }
     function renderForm(role){
-      const cfg = ROLES[role];
-      $('#formTitle').textContent = cfg.title;
-      $('#form').innerHTML = cfg.groups.map(g =>
-        (g.title ? `<h3 class="group-title">${esc(g.title)}</h3>` : '') + `<div class="fields">${g.fields.map(fieldHTML).join('')}</div>`
-      ).join('');
-      const card = $('#formCard');
-      card.hidden = false;
-      card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
+      $('#form').innerHTML = ROLES[role].groups.map(g =>
+        `<section class="group"><h2>${esc(g.title || ROLES[role].title)}</h2>${g.fields.map(rowHTML).join('')}</section>`).join('');
+      $('#intro').hidden = true; $('#formWrap').hidden = false;
+      $$('.sv input').forEach(fitInput);
     }
 
     const fieldsOf = role => ROLES[role].groups.flatMap(g => g.fields);
     const fieldDef = id => fieldsOf(state.role).find(f => f.id === id);
 
-    /* ================= ВЗАИМОДЕЙСТВИЕ ================= */
-    function selectRole(role){
-      if (state.role === role) return;
+    function fitInput(inp){ const n = (inp.value || inp.placeholder || '').length; inp.style.width = Math.max(2, n + .5) + 'ch'; }
+
+    function selectRole(role, force){
+      if (state.role === role && !force) return;
       state = { role, values:{}, last:null };
       $$('.role').forEach(b => b.setAttribute('aria-checked', String(b.dataset.role === role)));
       renderForm(role);
       showEmpty();
-      if (window.innerWidth <= 960){
-        const y = $('#formCard').getBoundingClientRect().top + scrollY - 76;
-        scrollTo({ top:y, behavior:'smooth' });
-      }
+      updateBar();
     }
 
     function setYN(id, v){
       state.values[id] = v;
-      const seg = $(`[data-yn="${id}"]`);
-      $$('button', seg).forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === v)));
+      $$(`[data-yn="${id}"] button`).forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === v)));
       clearErr(id);
       fieldsOf(state.role).filter(f => f.dep === id).forEach(f => {
-        const el = $(`.field[data-id="${f.id}"]`);
-        const show = v === 'yes';
-        if (show && el.hidden){ el.hidden = false; el.classList.add('reveal'); }
-        if (!show){ el.hidden = true; el.classList.remove('reveal'); const inp = $('#'+f.id); if (inp) inp.value = ''; clearErr(f.id); }
+        const row = $(`.row[data-id="${f.id}"]`);
+        row.hidden = v !== 'yes';
+        if (v !== 'yes'){ $('#'+f.id).value = ''; clearErr(f.id); }
       });
     }
-
+    function setStepVal(id, v){ const inp = $('#'+id); inp.value = String(v).replace('.', ','); fitInput(inp); syncPresets(id); clearErr(id); }
     function stepValue(id, dir){
-      const f = fieldDef(id), inp = $('#'+id);
-      let v = parseNum(inp.value);
-      if (isNaN(v)) v = dir > 0 ? f.presets[1] - f.inc : f.presets[1] + f.inc;
-      v = Math.round((v + dir * f.inc) / f.inc) * f.inc;
-      v = Math.min(f.max, Math.max(f.min, v));
-      inp.value = String(v).replace('.', ',');
-      syncChips(id); clearErr(id);
+      const f = fieldDef(id);
+      let v = parseNum($('#'+id).value);
+      if (isNaN(v)) v = f.presets[1] - dir * f.inc;
+      v = Math.min(f.max, Math.max(f.min, Math.round((v + dir * f.inc) / f.inc) * f.inc));
+      setStepVal(id, v);
     }
-    function syncChips(id){
-      const v = parseNum($('#'+id).value);
-      $$(`.field[data-id="${id}"] .chip`).forEach(c => c.classList.toggle('on', Number(c.dataset.preset) === v));
-    }
+    function syncPresets(id){ const v = parseNum($('#'+id).value); $$(`.row[data-id="${id}"] .presets button`).forEach(b => b.classList.toggle('on', Number(b.dataset.preset) === v)); }
+    function clearErr(id){ const r = $(`.row[data-id="${id}"]`); if (r) r.classList.remove('invalid'); }
+    function setErr(id, msg){ const r = $(`.row[data-id="${id}"]`); if (!r) return; r.classList.add('invalid'); $('.err', r).textContent = msg; }
 
-    function clearErr(id){ const el = $(`.field[data-id="${id}"]`); if (el) el.classList.remove('invalid'); }
-    function setErr(id, msg){ const el = $(`.field[data-id="${id}"]`); if (!el) return; el.classList.add('invalid'); $('.err', el).textContent = msg; }
-
-    /* ================= СБОР И ВАЛИДАЦИЯ ================= */
+    /* ================= ВАЛИДАЦИЯ ================= */
     function collect(){
-      const out = {}; const errors = [];
+      const out = {}, errors = [];
       fieldsOf(state.role).forEach(f => {
-        if (f.type === 'yn'){
-          const v = state.values[f.id] || '';
-          if (!v) errors.push([f.id, 'Выбери вариант']);
-          out[f.id] = v; return;
-        }
+        if (f.type === 'yn'){ const v = state.values[f.id] || ''; if (!v) errors.push([f.id, 'Выбери «Да» или «Нет»']); out[f.id] = v; return; }
         if (f.dep && state.values[f.dep] !== 'yes'){ out[f.id] = null; return; }
-        const raw = $('#'+f.id).value.trim();
-        const n = parseNum(raw);
-        if (raw === '' ) { errors.push([f.id, 'Заполни поле']); return; }
-        if (isNaN(n))    { errors.push([f.id, 'Введи число']); return; }
-        if (n < 0)       { errors.push([f.id, 'Не может быть меньше нуля']); return; }
-        if (f.positive && n <= 0) { errors.push([f.id, 'Должно быть больше нуля']); return; }
+        const raw = $('#'+f.id).value.trim(), n = parseNum(raw);
+        if (raw === '')  return errors.push([f.id, 'Заполни поле']);
+        if (isNaN(n))    return errors.push([f.id, 'Нужно число, например 95 или 95,5']);
+        if (n < 0)       return errors.push([f.id, 'Не может быть меньше нуля']);
+        if (f.positive && n <= 0) return errors.push([f.id, 'Должно быть больше нуля']);
         if (f.type === 'step'){
-          if (n < f.min || n > f.max) { errors.push([f.id, `От ${fmtNum(f.min, f.min % 1 ? 1 : 0)} до ${fmtNum(f.max)}`]); return; }
-          if (f.int && n % 1) { errors.push([f.id, 'Целое число']); return; }
+          if (n < f.min || n > f.max) return errors.push([f.id, `От ${fmtNum(f.min, f.min % 1 ? 1 : 0)} до ${fmtNum(f.max)}`]);
+          if (f.int && n % 1) return errors.push([f.id, 'Только целое число']);
         }
         out[f.id] = n;
       });
       return { values: out, errors };
     }
 
-    /* ================= ФОРМУЛЫ (без изменений относительно прошлой версии) ================= */
+    /* ================= ФОРМУЛЫ (не менялись) ================= */
     const CALC = {
       zam(v){
         const to=v.zam_to, tp=v.zam_tp, ato=v.zam_ato, hr=v.zam_hr, feedback=v.zam_feedback;
@@ -608,49 +523,46 @@
       }
     };
 
-    /* ================= РЕЗУЛЬТАТ ================= */
-    function showEmpty(error){
-      $('#result').innerHTML = error
-        ? `<div class="empty error"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></svg></div><b>Проверь введённые значения</b>${esc(error)}</div>`
-        : `<div class="empty"><div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><b>Здесь будет результат</b>${state.role ? 'Заполни поля и нажми «Рассчитать»' : 'Выбери должность и заполни поля'}</div>`;
-    }
 
-    function renderResult(r){
-      const rows = rs => rs.map(x => `<div class="r-row${x.total ? ' total' : ''}"><span>${esc(x.label)}${x.note ? `<small>${esc(x.note)}</small>` : ''}</span><strong class="${x.value === 0 ? 'zero' : x.plus ? 'plus' : ''}">${esc(x.text)}</strong></div>`).join('');
-      $('#result').innerHTML = `
-        <div class="result-top">
-          <div class="result-label">${esc(r.totalLabel)}</div>
-          <div class="result-total">${esc(r.totalText)}</div>
-          <div class="result-sub">${esc(r.sub)}</div>
-        </div>
-        <div class="result-body">${r.sections.map(s => `<div class="r-sec"><h3>${esc(s.title)}</h3>${rows(s.rows)}</div>`).join('')}</div>
-        <div class="result-actions"><button type="button" class="btn ghost" id="copyBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg>
-          Скопировать расчёт</button></div>`;
-      $('#copyBtn').addEventListener('click', copyData);
+    /* ================= ЧЕК ================= */
+    const head = sub => `<div class="rc-c rc-title">РАСЧЁТ ЗАРПЛАТЫ</div><div class="rc-c rc-m">${esc(sub)}</div>`;
+    function showEmpty(err){
+      const r = $('#receipt'); r.classList.remove('print');
+      const roleLine = state.role ? `<div class="rc-row"><span class="l rc-m">Должность</span></div><div>${esc(ROLES[state.role].name)}</div><hr class="rc-cut">` : '';
+      r.innerHTML = head(new Date().toLocaleDateString('ru-RU')) + '<hr class="rc-cut">' + roleLine
+        + (err ? `<div class="rc-c rc-empty"><div class="rc-err">НЕ ХВАТАЕТ ДАННЫХ</div>${esc(err)}</div>`
+               : `<div class="rc-c rc-empty">${state.role ? 'Заполни поля и нажми<br>«Рассчитать»' : 'Выбери должность,<br>и здесь появится расчёт'}</div>`);
+      $('#sideActions').hidden = true;
+    }
+    function renderReceipt(r){
+      const el = $('#receipt');
+      const now = new Date().toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+      const rows = rs => rs.map(x => `<div class="rc-row${x.total ? ' b' : ''}"><span class="l">${esc(x.label)}</span><span class="d"></span><span class="v">${esc(x.text)}</span></div>${x.note ? `<div class="rc-note">${esc(x.note)}</div>` : ''}`).join('');
+      el.innerHTML = head(now) + '<hr class="rc-cut">'
+        + `<div class="rc-m">Должность</div><div>${esc(ROLES[state.role].name)}</div><hr class="rc-cut">`
+        + r.sections.map(s => `<div class="rc-sec">${esc(s.title.toUpperCase())}</div>${rows(s.rows)}`).join('<hr class="rc-cut">')
+        + `<hr class="rc-dbl"><div class="rc-sec">ИТОГО: ${esc(r.totalLabel.toLowerCase())}</div><div class="rc-total"><span class="rc-m">${esc(r.sub)}</span><span class="v">${esc(r.totalText)}</span></div><hr class="rc-dbl">`;
+      el.classList.remove('print'); void el.offsetWidth; el.classList.add('print');
+      $('#sideActions').hidden = false;
     }
 
     function calculate(){
       if (!state.role){ toast('Сначала выбери должность'); return; }
-      $$('.field.invalid').forEach(el => el.classList.remove('invalid'));
+      $$('.row.invalid').forEach(el => el.classList.remove('invalid'));
       const { values, errors } = collect();
       if (errors.length){
         errors.forEach(([id, m]) => setErr(id, m));
         state.last = null;
-        showEmpty(errors.length === 1 ? 'Одно поле заполнено неверно' : `Полей с ошибками: ${errors.length}`);
-        const first = $(`.field[data-id="${errors[0][0]}"]`);
-        if (first){
-          scrollTo({ top: first.getBoundingClientRect().top + scrollY - 96, behavior:'smooth' });
-          const inp = $('input', first); if (inp) setTimeout(() => inp.focus({ preventScroll:true }), 300);
-        }
+        showEmpty(errors.length === 1 ? 'Заполни отмеченное поле' : `Заполни отмеченные поля: ${errors.length}`);
+        const first = $(`.row[data-id="${errors[0][0]}"]`);
+        scrollTo({ top: first.getBoundingClientRect().top + scrollY - 24, behavior:'smooth' });
+        const inp = $('input', first); if (inp) setTimeout(() => inp.focus({ preventScroll:true }), 350);
         return;
       }
       const r = CALC[state.role](values);
       state.last = { values, result:r };
-      renderResult(r);
-      if (window.innerWidth <= 960){
-        scrollTo({ top: $('#resultWrap').getBoundingClientRect().top + scrollY - 80, behavior:'smooth' });
-      }
+      renderReceipt(r);
+      if (window.innerWidth <= 960) scrollTo({ top: $('#side').getBoundingClientRect().top + scrollY - 16, behavior:'smooth' });
     }
 
     /* ================= КОПИРОВАНИЕ ================= */
@@ -661,98 +573,62 @@
       fieldsOf(state.role).forEach(f => {
         const v = values[f.id];
         if (v === null || v === undefined || v === '') return;
-        let txt = f.type === 'yn' ? (v === 'yes' ? 'Да' : 'Нет/Не знаю') : f.hours ? fmtNum(v, 1) : fmtNum(v, v % 1 ? 2 : 0);
-        lines.push(`${f.copy}: ${txt}`);
+        lines.push(`${f.copy}: ${f.type === 'yn' ? (v === 'yes' ? 'Да' : 'Нет/Не знаю') : f.hours ? fmtNum(v, 1) : fmtNum(v, v % 1 ? 2 : 0)}`);
       });
       lines.push('', 'Результат расчёта:');
-      result.sections.forEach(s => {
-        lines.push(s.title);
-        s.rows.forEach(x => lines.push(`  ${x.label}: ${x.text}${x.note ? ` (${x.note})` : ''}`));
-      });
+      result.sections.forEach(s => { lines.push(s.title); s.rows.forEach(x => lines.push(`  ${x.label}: ${x.text}${x.note ? ` (${x.note})` : ''}`)); });
       lines.push('', `${result.totalLabel}: ${result.totalText}`);
       return lines.join('\n') + '\n';
     }
     async function copyData(){
-      const text = copyText();
-      if (!text){ toast('Сначала сделай расчёт'); return; }
+      const text = copyText(); if (!text) return;
       try {
         if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
-        else {
-          const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly','');
-          ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0'; document.body.appendChild(ta); ta.select();
-          document.execCommand('copy'); ta.remove();
-        }
-        toast('Расчёт скопирован ✓');
-      } catch(e){ toast('Не удалось скопировать'); }
+        else { const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+        toast('Расчёт скопирован');
+      } catch(e){ toast('Не получилось скопировать. Выдели текст чека вручную'); }
     }
-
-    let toastT;
-    function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
-
-    /* ================= ТЕМА ================= */
-    function initTheme(){
-      const root = document.documentElement;
-      let saved = null; try { saved = localStorage.getItem('calc-theme'); } catch(e){}
-      if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
-      $('#themeBtn').addEventListener('click', () => {
-        const cur = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        const next = cur === 'dark' ? 'light' : 'dark';
-        root.dataset.theme = next;
-        try { localStorage.setItem('calc-theme', next); } catch(e){}
-      });
-    }
+    let tt; function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200); }
 
     /* ================= СОБЫТИЯ ================= */
     $('#roles').addEventListener('click', e => { const b = e.target.closest('.role'); if (b) selectRole(b.dataset.role); });
     $('#roles').addEventListener('keydown', e => {
-      if (!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(e.key)) return;
-      e.preventDefault();
-      const list = $$('.role'), i = list.indexOf(document.activeElement);
-      const n = list[(i + (['ArrowRight','ArrowDown'].includes(e.key) ? 1 : -1) + list.length) % list.length];
-      n.focus(); selectRole(n.dataset.role);
+      const k = e.key; if (!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(k)) return;
+      e.preventDefault(); const l = $$('.role'), i = l.indexOf(document.activeElement);
+      const n = l[(i + (k === 'ArrowRight' || k === 'ArrowDown' ? 1 : -1) + l.length) % l.length]; n.focus(); selectRole(n.dataset.role);
     });
-
     $('#form').addEventListener('click', e => {
-      const hb = e.target.closest('.hint-btn');
-      if (hb){ const h = $('#' + hb.getAttribute('aria-controls')); h.hidden = !h.hidden; hb.setAttribute('aria-expanded', String(!h.hidden)); return; }
-      const yn = e.target.closest('.seg button');
-      if (yn){ setYN(yn.closest('.seg').dataset.yn, yn.dataset.v); return; }
-      const sb = e.target.closest('.step-btn');
-      if (sb){ stepValue(sb.closest('.field').dataset.id, Number(sb.dataset.inc)); return; }
-      const chip = e.target.closest('.chip');
-      if (chip){ const id = chip.closest('.field').dataset.id; $('#'+id).value = String(chip.dataset.preset).replace('.', ','); syncChips(id); clearErr(id); }
+      const q = e.target.closest('.q');
+      if (q){ const h = $('#' + q.getAttribute('aria-controls')); h.hidden = !h.hidden; q.setAttribute('aria-expanded', String(!h.hidden)); return; }
+      const yn = e.target.closest('.seg button'); if (yn){ setYN(yn.closest('.seg').dataset.yn, yn.dataset.v); return; }
+      const sb = e.target.closest('.stepper button'); if (sb){ stepValue(sb.closest('.row').dataset.id, Number(sb.dataset.inc)); return; }
+      const p = e.target.closest('.presets button'); if (p){ setStepVal(p.closest('.row').dataset.id, p.dataset.preset); }
     });
     $('#form').addEventListener('input', e => {
-      if (!e.target.classList.contains('input')) return;
-      e.target.value = e.target.value.replace(/[^\d.,]/g, '');
-      const id = e.target.id; clearErr(id);
-      if (fieldDef(id)?.type === 'step') syncChips(id);
+      const inp = e.target; if (inp.tagName !== 'INPUT') return;
+      inp.value = inp.value.replace(/[^\d.,]/g, '');
+      clearErr(inp.id);
+      if (fieldDef(inp.id)?.type === 'step'){ fitInput(inp); syncPresets(inp.id); }
     });
     $('#form').addEventListener('keydown', e => {
       if (e.key === 'Enter'){ e.preventDefault(); calculate(); }
-      if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && e.target.classList.contains('input')){
+      if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && e.target.tagName === 'INPUT'){
         const f = fieldDef(e.target.id); if (f && f.type === 'step'){ e.preventDefault(); stepValue(f.id, e.key === 'ArrowUp' ? 1 : -1); }
       }
     });
     $('#form').addEventListener('submit', e => { e.preventDefault(); calculate(); });
-
     $('#calcBtn').addEventListener('click', calculate);
     $('#calcBtnM').addEventListener('click', calculate);
-    $('#resetBtn').addEventListener('click', () => { const r = state.role; state.role = null; selectRole(r); toast('Поля очищены'); });
+    $('#copyBtn').addEventListener('click', copyData);
+    $('#resetBtn').addEventListener('click', () => { selectRole(state.role, true); toast('Поля очищены'); });
 
-    // мобильная панель: показываем, когда основная кнопка вне экрана, а роль выбрана
-    const mbar = $('#mbar');
-    let calcVisible = true;
-    new IntersectionObserver(([en]) => { calcVisible = en.isIntersecting; mbar.classList.toggle('show', !!state.role && !calcVisible); }).observe($('#calcBtn'));
-    const io2 = new IntersectionObserver(([en]) => { if (en.isIntersecting) mbar.classList.remove('show'); else if (state.role && !calcVisible) mbar.classList.add('show'); });
-    io2.observe($('#resultWrap'));
+    // мобильная панель «Рассчитать»: когда основная кнопка и чек вне экрана
+    const vis = { calc:false, side:false };
+    function updateBar(){ $('#mbar').classList.toggle('show', !!state.role && !vis.calc && !vis.side); }
+    new IntersectionObserver(([en]) => { vis.calc = en.isIntersecting; updateBar(); }).observe($('#calcBtn'));
+    new IntersectionObserver(([en]) => { vis.side = en.isIntersecting; updateBar(); }).observe($('#side'));
 
-    const onScroll = () => document.body.classList.toggle('scrolled', scrollY > 4);
-    addEventListener('scroll', onScroll, { passive:true }); onScroll();
-
-    initTheme();
-
-    // для автотестов
+    showEmpty();
     window.__calc = { CALC, ROLES };
   })();
   </script>
