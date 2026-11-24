@@ -74,7 +74,7 @@
     .top p{color:var(--muted);margin-top:6px;max-width:560px}
 
     /* ===== Должности ===== */
-    .roles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:20px}
+    .roles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:20px}
     @media (max-width:860px){.roles{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .role{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px 14px;min-height:68px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel);transition:border-color .12s,background .12s}
     .role:hover{border-color:var(--rule-strong)}
@@ -210,7 +210,6 @@
       <button type="button" class="role" role="radio" aria-checked="false" data-role="zamBar"><b>Заместитель директора по бару</b><span>расчёт за смену</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="povar"><b>Повар</b><span>смена и доплата АТО за месяц</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="cashier"><b>Кассир / Бариста</b><span>по положению с 01.11.2026</span></button>
-      <button type="button" class="role" role="radio" aria-checked="false" data-role="others"><b>Другие должности</b><span>ст. кассир, зал, повар-универсал</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="general"><b>Общий подсчёт</b><span>по ставке на месяц</span></button>
     </div>
 
@@ -305,31 +304,38 @@
           ]}
         ]
       },
-      others: {
-        name: 'Старший кассир / Работник торгового зала / Повар-универсал',
+      cashier: {
+        name: 'Кассир / Бариста',
         title: 'Смена и показатели',
         groups: [
           { title:'Смена', fields: [
-            { id:'others_hourly_rate', type:'num', unit:'₽/ч', label:'Твоя часовая ставка', copy:'Часовая ставка (₽)', hint:'Сумма за один час работы.' },
+            { id:'others_hourly_rate', type:'num', default:310, unit:'₽/ч', label:'Твоя часовая ставка', copy:'Часовая ставка (₽)',
+              hint:'По положению — 310 ₽/час без премий. При необходимости укажи свою базовую ставку.' },
             { id:'others_shift_length', type:'step', unit:'ч', min:0.5, max:24, inc:0.5, presets:[6,8,11,12], label:'Сколько длилась смена?', copy:'Длительность смены (часы)', hours:true, hint:'От 0,5 до 24 часов с шагом 0,5.' },
-            { id:'others_total_hours', type:'num', unit:'ч', positive:true, label:'Сколько часов суммарно отработала команда за смену?', copy:'Общее количество часов команды (часы)', full:true,
-              hint:'Общее количество часов, отработанных всей командой за смену. Например, если 3 человека работали по 8 часов, введи 24.' + DIR }
+            { id:'cashier_night_hours', type:'num', unit:'ч', default:0, max:24, hours:true,
+              label:'Из них часов с 23:15 до 06:30', copy:'Ночные часы без KPI',
+              hint:'Отработанные часы внутри этого интервала оплачиваются по базовой ставке, но не участвуют в KPI.' },
+            { id:'others_total_hours', type:'num', unit:'ч', positive:false, label:'Часы кассиров и бариста за смену для KPI', copy:'Общее количество часов команды (часы)', full:true,
+              hint:'Сумма часов только кассиров и бариста, включая твои часы. Исключи часы с 23:15 до 06:30. Если таких часов нет у всей команды, введи 0.' }
           ]},
           { title:'Товарооборот', fields: [
-            { id:'others_to', type:'num', unit:'₽', label:'Товарооборот за день', copy:'Товарооборот за день (₽)',
-              hint:'Общая сумма выручки за день (все продажи), например 500 000 ₽. Уточни у директора или посмотри в Дашборде.' },
+            { id:'others_to', type:'num', unit:'₽', label:'Фактический товарооборот за смену', copy:'Товарооборот за смену (₽)',
+              hint:'Фактическая выручка кафе за ту смену, для которой рассчитывается премия.' + DIR },
             { id:'others_to_percent', type:'num', unit:'%', label:'На сколько процентов выполнен план по ТО?', copy:'Процент выполнения плана по ТО (%)',
-              hint:'Соотношение фактической выручки к плановой за день. Например, если план 50 000 ₽, а выручка 47 500 ₽, введи 95. Уточни у директора или посмотри в Дашборде.' }
+              hint:'Процент выполнения плана ТО за ту же смену: фактическая выручка ÷ план × 100.' + DIR }
           ]},
           { title:'Качество', fields: [
             { id:'others_has_tp', type:'yn', label:'Была проверка Тайного покупателя?', copy:'Была ли проверка от Тайного покупателя?', hint:'Была ли проведена проверка Тайного покупателя во время твоей смены.' },
-            { id:'others_tp', type:'num', unit:'%', dep:'others_has_tp', label:'На сколько процентов пройдена проверка?', copy:'Процент проверки Тайного покупателя (%)',
+            { id:'others_tp', type:'num', unit:'%', max:100, dep:'others_has_tp', label:'На сколько процентов пройдена проверка?', copy:'Процент проверки Тайного покупателя (%)',
               hint:'Оценка качества обслуживания, которую ставит тайный покупатель. Укажи процент прохождения чек-листа.' + DIR },
             { id:'others_has_ato', type:'yn', label:'Было прохождение АТО+СГИ?', copy:'Было ли прохождение АТО + СГИ?', hint:'Проводилась ли проверка АТО+СГИ во время твоей смены.' },
-            { id:'others_ato', type:'num', unit:'%', dep:'others_has_ato', label:'Процент прохождения АТО+СГИ за смену', copy:'Процент прохождения АТО+СГИ (%)',
+            { id:'others_ato', type:'num', unit:'%', max:100, dep:'others_has_ato', label:'Процент прохождения АТО+СГИ за смену', copy:'Процент прохождения АТО+СГИ (%)',
               hint:'АТО+СГИ — показатели аудита торговой точки и соблюдения санитарных норм. Укажи процент выполнения этих стандартов за смену.' + DIR },
-            { id:'others_complaints', type:'num', unit:'шт', label:'Подтверждённых отрицательных отзывов за смену', copy:'Подтверждённые отрицательные отзывы', full:true,
-              hint:'Количество подтверждённых жалоб от клиентов за смену.' + DIR }
+            { id:'others_complaints', type:'num', unit:'шт', int:true, label:'Подтверждённых отрицательных отзывов за смену', copy:'Подтверждённые отрицательные отзывы', full:true,
+              hint:'Количество подтверждённых жалоб от клиентов за смену.' + DIR },
+            { id:'cashier_display', type:'num', unit:'%', max:100,
+              label:'Наполненность витрины за смену', copy:'Наполненность витрины (%)',
+              hint:'Средняя наполненность: ниже 90% — коэффициент 0; от 90% до 98% — 1; от 98% — 1,2.' }
           ]}
         ]
       },
@@ -343,30 +349,6 @@
         ]}]
       }
     };
-
-
-    // Новая формула распространяется на кассира и бариста. Остальные роли сохраняют прежние правила.
-    ROLES.cashier = JSON.parse(JSON.stringify(ROLES.others));
-    ROLES.cashier.name = 'Кассир / Бариста';
-    const cashierFields = ROLES.cashier.groups.flatMap(g => g.fields);
-    const cashierField = id => cashierFields.find(f => f.id === id);
-    Object.assign(cashierField('others_hourly_rate'), { default:310, hint:'По положению — 310 ₽/час без премий. При необходимости укажи свою базовую ставку.' });
-    Object.assign(cashierField('others_total_hours'), { positive:false, label:'Часы кассиров и бариста за смену для KPI', hint:'Сумма часов только кассиров и бариста, включая твои часы. Исключи часы с 23:15 до 06:30. Если таких часов нет у всей команды, введи 0.' });
-    Object.assign(cashierField('others_to'), { label:'Фактический товарооборот за смену', copy:'Товарооборот за смену (₽)', hint:'Фактическая выручка кафе за ту смену, для которой рассчитывается премия.' + DIR });
-    cashierField('others_to_percent').hint = 'Процент выполнения плана ТО за ту же смену: фактическая выручка ÷ план × 100.' + DIR;
-    cashierField('others_tp').max = 100;
-    cashierField('others_ato').max = 100;
-    cashierField('others_complaints').int = true;
-    ROLES.cashier.groups[0].fields.splice(2, 0, {
-      id:'cashier_night_hours', type:'num', unit:'ч', default:0, max:24, hours:true,
-      label:'Из них часов с 23:15 до 06:30', copy:'Ночные часы без KPI',
-      hint:'Отработанные часы внутри этого интервала оплачиваются по базовой ставке, но не участвуют в KPI.'
-    });
-    ROLES.cashier.groups[2].fields.push({
-      id:'cashier_display', type:'num', unit:'%', max:100,
-      label:'Наполненность витрины за смену', copy:'Наполненность витрины (%)',
-      hint:'Средняя наполненность: ниже 90% — коэффициент 0; от 90% до 98% — 1; от 98% — 1,2.'
-    });
 
     /* ================= УТИЛИТЫ ================= */
     const $ = (s, r=document) => r.querySelector(s);
@@ -619,43 +601,6 @@
               { label:'Часы сотрудника для KPI', text:h1(kpiHours) },
               { label:'Часы кассиров и бариста для KPI', text:h1(totalHours) },
               { label:'Доля из фонда', note: totalHours > 0 ? `Фонд ÷ ${h1(totalHours)} команды × ${h1(kpiHours)} сотрудника, без ночных часов` : 'У команды нет часов для KPI → премия 0 ₽.', value:personalBonus, text:'+ ' + rub(personalBonus), plus:true }
-            ]}
-          ]
-        };
-      },
-      others(v){
-        const TO=v.others_to, TO_percent=v.others_to_percent, hasTP=v.others_has_tp, hasATO=v.others_has_ato;
-        const TP = hasTP === 'yes' ? v.others_tp : 0;
-        const ATO = hasATO === 'yes' ? v.others_ato : 0;
-        const complaints = parseInt(v.others_complaints);
-        const hourlyRate=v.others_hourly_rate, shiftLength=v.others_shift_length, totalHours=v.others_total_hours;
-
-        let coefTP = 1;
-        if (hasTP === 'yes'){ if (TP < 80) coefTP = 0.5; else if (TP >= 80 && TP < 95) coefTP = 1; else if (TP >= 95) coefTP = 2; }
-        const coefComplaints = complaints === 0 ? 1 : 0.75;
-        let coefATO = 1;
-        if (hasATO === 'yes'){ if (ATO < 85) coefATO = 0.5; else if (ATO >= 85 && ATO <= 95) coefATO = 1; else if (ATO > 95) coefATO = 2; }
-
-        const fundTO = TO_percent <= 100 ? 0.009 * TO : 0.018 * TO;
-        const fund = fundTO * coefTP * coefComplaints * coefATO;
-        const salaryBase = hourlyRate * shiftLength;
-        const personalBonus = (fund / totalHours) * shiftLength;
-        const total = salaryBase + personalBonus;
-        const k = n => '× ' + fmtNum(n, 2);
-        return {
-          totalLabel:'Зарплата за смену', total, totalText:rub(total),
-          sub:`База ${rub(salaryBase)} + премия ${rub(personalBonus)}`,
-          sections:[
-            { title:'Фонд премии лавки', rows:[
-              { label:`Базовый фонд от ТО (${pct(TO_percent)})`, note: TO_percent <= 100 ? 'План ≤ 100% → 0,9% от ТО' : 'План > 100% → 1,8% от ТО', text:rub(fundTO) },
-              { label:`Коэф. Тайного покупателя (${hasTP === 'yes' ? pct(TP) : 'не было'})`, text:k(coefTP) },
-              { label:`Коэф. жалоб (${complaints})`, text:k(coefComplaints) },
-              { label:`Коэф. АТО+СГИ (${hasATO === 'yes' ? pct(ATO) : 'не было'})`, text:k(coefATO) },
-              { label:'Итоговый фонд', text:rub(fund), total:true }
-            ]},
-            { title:'Твоя зарплата', rows:[
-              { label:`База за смену (${h1(shiftLength)})`, text:rub(salaryBase) },
-              { label:'Доля из фонда', note:`Фонд ÷ ${fmtNum(totalHours, totalHours % 1 ? 1 : 0)} ч команды × ${h1(shiftLength)}`, value:personalBonus, text:'+ ' + rub(personalBonus), plus:true }
             ]}
           ]
         };
