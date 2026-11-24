@@ -252,7 +252,9 @@
       { id:'deputy_sales', type:'num', unit:'₽', label:'Фактический товарооборот кафе за смену', copy:'Фактический ТО (₽)' },
       { id:'deputy_plan', type:'num', unit:'%', label:'Выполнение плана ТО за смену', copy:'Выполнение плана ТО (%)',
         hint:'Ниже 95% — 0% от ТО. От 95% до 100% — 0,2%. От 100% — 0,4%.' },
-      { id:'deputy_tp', type:'num', unit:'%', max:100, label:'Оценка тайного покупателя', copy:'Тайный покупатель (%)' },
+      { id:'deputy_has_tp', type:'yn', label:'Была проверка тайного покупателя?', copy:'Проверка тайного покупателя',
+        hint:'Если проверки не было, коэффициент равен 1.' },
+      { id:'deputy_tp', type:'num', unit:'%', max:100, dep:'deputy_has_tp', label:'Оценка тайного покупателя', copy:'Тайный покупатель (%)' },
       { id:'deputy_complaints', type:'num', unit:'шт', int:true, label:'Подтверждённые жалобы за смену', copy:'Подтверждённые жалобы' },
     ];
     const deputyRole = (name, fields) => ({
@@ -265,14 +267,18 @@
     const ROLES = {
       zamHall: deputyRole('Заместитель директора по залу', [
         { id:'deputy_display', type:'num', unit:'%', max:100, label:'Наполненность витрины', copy:'Наполненность витрины (%)' },
-        { id:'deputy_ato_hall', type:'num', unit:'%', max:100, label:'Прохождение АТО + СГИ', copy:'АТО + СГИ (%)' },
+        { id:'deputy_has_ato', type:'yn', label:'Была проверка АТО + СГИ?', copy:'Проверка АТО + СГИ',
+          hint:'Если проверки не было, коэффициент равен 1.' },
+        { id:'deputy_ato_hall', type:'num', unit:'%', max:100, dep:'deputy_has_ato', label:'Прохождение АТО + СГИ', copy:'АТО + СГИ (%)' },
         { id:'deputy_poisoning', type:'yn', label:'Была подтверждённая жалоба на отравление?', copy:'Подтверждённая жалоба на отравление' },
       ]),
       zamBar: deputyRole('Заместитель директора по бару', [
         { id:'deputy_coffee', type:'num', unit:'%', label:'Выполнение показателя «Чек кофе РКМ»', copy:'Чек кофе РКМ (%)' },
         { id:'deputy_ticket', type:'select', label:'Тикет открытия смены и настройки кофе', copy:'Тикет',
           options:{ red:'Красный / отсутствует', yellow:'Жёлтый', green:'Зелёный' } },
-        { id:'deputy_ato_bar', type:'num', unit:'%', max:100, label:'Прохождение АТО ТБ', copy:'АТО ТБ (%)' },
+        { id:'deputy_has_ato', type:'yn', label:'Была проверка АТО ТБ?', copy:'Проверка АТО ТБ',
+          hint:'Если проверки не было, коэффициент равен 1.' },
+        { id:'deputy_ato_bar', type:'num', unit:'%', max:100, dep:'deputy_has_ato', label:'Прохождение АТО ТБ', copy:'АТО ТБ (%)' },
       ]),
       povar: {
         name: 'Повар',
@@ -508,7 +514,8 @@
 
     const deputyCommonFactors = v => [
       { label:'Подтверждённые жалобы', coefficient:v.deputy_complaints === 0 ? 1 : 0.75 },
-      { label:'Тайный покупатель', coefficient:v.deputy_tp < 85 ? 0 : v.deputy_tp < 100 ? 1 : 1.2 },
+      { label:v.deputy_has_tp === 'yes' ? 'Тайный покупатель' : 'Тайный покупатель (без проверки)',
+        coefficient:v.deputy_has_tp !== 'yes' ? 1 : v.deputy_tp < 85 ? 0 : v.deputy_tp < 100 ? 1 : 1.2 },
     ];
 
     const CALC = {
@@ -516,7 +523,8 @@
         return deputyShiftKpi(v, [
           ...deputyCommonFactors(v),
           { label:'Наполненность витрины', coefficient:v.deputy_display < 90 ? 0.5 : v.deputy_display < 98 ? 1 : 1.2 },
-          { label:'АТО + СГИ', coefficient:v.deputy_ato_hall < 85 ? 0.5 : v.deputy_ato_hall <= 90 ? 0.75 : 1 },
+          { label:v.deputy_has_ato === 'yes' ? 'АТО + СГИ' : 'АТО + СГИ (без проверки)',
+            coefficient:v.deputy_has_ato !== 'yes' ? 1 : v.deputy_ato_hall < 85 ? 0.5 : v.deputy_ato_hall <= 90 ? 0.75 : 1 },
           { label:'Подтверждённая жалоба на отравление', coefficient:v.deputy_poisoning === 'yes' ? 0.5 : 1 },
         ]);
       },
@@ -525,7 +533,8 @@
           ...deputyCommonFactors(v),
           { label:'Чек кофе РКМ', coefficient:v.deputy_coffee < 95 ? 0.75 : v.deputy_coffee < 110 ? 1 : 1.2 },
           { label:'Тикет открытия и настройки кофе', coefficient:{ red:0.5, yellow:1, green:1.2 }[v.deputy_ticket] },
-          { label:'АТО ТБ', coefficient:v.deputy_ato_bar < 85 ? 0.5 : v.deputy_ato_bar < 100 ? 1 : 1.2 },
+          { label:v.deputy_has_ato === 'yes' ? 'АТО ТБ' : 'АТО ТБ (без проверки)',
+            coefficient:v.deputy_has_ato !== 'yes' ? 1 : v.deputy_ato_bar < 85 ? 0.5 : v.deputy_ato_bar < 100 ? 1 : 1.2 },
         ]);
       },
       povar(v){
