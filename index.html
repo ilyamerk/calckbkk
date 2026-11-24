@@ -74,7 +74,7 @@
     .top p{color:var(--muted);margin-top:6px;max-width:560px}
 
     /* ===== Должности ===== */
-    .roles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:20px}
+    .roles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:20px}
     @media (max-width:860px){.roles{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .role{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px 14px;min-height:68px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel);transition:border-color .12s,background .12s}
     .role:hover{border-color:var(--rule-strong)}
@@ -205,7 +205,8 @@
     </header>
 
     <div class="roles" role="radiogroup" aria-label="Должность" id="roles">
-      <button type="button" class="role" role="radio" aria-checked="false" data-role="zam"><b>Заместитель директора</b><span>премия за месяц</span></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="zamHall"><b>Заместитель директора по залу</b></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="zamBar"><b>Заместитель директора по бару</b></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="povar"><b>Повар</b><span>смена и доплата АТО за месяц</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="cashier"><b>Кассир / Бариста</b><span>по положению с 01.11.2026</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="others"><b>Другие должности</b><span>ст. кассир, зал, повар-универсал</span></button>
@@ -243,22 +244,8 @@
 
     const DIR = ' Эту информацию ты можешь уточнить у своего директора.';
     const ROLES = {
-      zam: {
-        name: 'Заместитель директора',
-        title: 'Показатели за месяц',
-        groups: [{ title: null, fields: [
-          { id:'zam_to', type:'num', unit:'%', label:'На сколько процентов выполнен план по ТО за месяц?', copy:'Процент выполнения плана по ТО (%)',
-            hint:'Процент выполнения плана по товарообороту за месяц. Например, если план был 100 000 ₽, а лавка заработала 95 000 ₽, введи 95.' },
-          { id:'zam_tp', type:'num', unit:'%', label:'На сколько процентов пройдена проверка Тайного покупателя?', copy:'Процент проверки Тайного покупателя (%)',
-            hint:'Оценка качества обслуживания, которую ставит тайный покупатель. Укажи процент прохождения чек-листа.' },
-          { id:'zam_ato', type:'num', unit:'%', label:'Процент прохождения АТО+СГИ', copy:'Процент прохождения АТО+СГИ (%)',
-            hint:'АТО+СГИ — показатели аудита торговой точки и соблюдения санитарных норм. Укажи процент выполнения этих стандартов за месяц.' },
-          { id:'zam_hr', type:'num', unit:'%', label:'HR-индекс лавки за месяц', copy:'Процент HR-индекса (%)',
-            hint:'Итоговый ежемесячный показатель HR-индекса.' },
-          { id:'zam_feedback', type:'num', unit:'шт', label:'Отрицательных отзывов на 10 000 чеков', copy:'Отрицательные отзывы на 10 000 чеков', full:true,
-            hint:'Количество отрицательных отзывов за месяц в пересчёте на 10 000 чеков. Например, если было 2 отзыва на 5 000 чеков, введи 4.' }
-        ]}]
-      },
+      zamHall: { name: 'Заместитель директора по залу' },
+      zamBar: { name: 'Заместитель директора по бару' },
       povar: {
         name: 'Повар',
         title: 'Параметры смены',
@@ -383,6 +370,13 @@
         <div class="row-ctrl">${ctrlHTML(f)}<p class="err"></p></div></div>`;
     }
     function renderForm(role){
+      if (!CALC[role]) {
+        $('#form').replaceChildren();
+        $('#formWrap').hidden = true;
+        $('#intro').textContent = 'Расчёт КПИ для этой должности пока недоступен.';
+        $('#intro').hidden = false;
+        return;
+      }
       $('#form').innerHTML = ROLES[role].groups.map(g =>
         `<section class="group"><h2>${esc(g.title || ROLES[role].title)}</h2>${g.fields.map(rowHTML).join('')}</section>`).join('');
       $('#intro').hidden = true; $('#formWrap').hidden = false;
@@ -457,26 +451,6 @@
 
     /* ================= ФОРМУЛЫ (повар, кассир и бариста — положение от 01.11.2026) ================= */
     const CALC = {
-      zam(v){
-        const to=v.zam_to, tp=v.zam_tp, ato=v.zam_ato, hr=v.zam_hr, feedback=v.zam_feedback;
-        const bonusTO = to >= 95 && to < 98 ? 5000 : to >= 98 && to <= 102.9 ? 10000 : to > 102.9 ? 15000 : 0;
-        const bonusTP = tp >= 85 && tp < 90 ? 1500 : tp >= 90 ? 3000 : 0;
-        const bonusATO = ato >= 85 && ato <= 95 ? 1500 : ato > 95 ? 3000 : 0;
-        const bonusHR = hr >= 80 && hr <= 85 ? 2000 : hr > 85 ? 4000 : 0;
-        const bonusFeedback = feedback > 3 && feedback < 6 ? 1500 : feedback <= 3 ? 3000 : 0;
-        const total = bonusTO + bonusTP + bonusATO + bonusHR + bonusFeedback;
-        return {
-          totalLabel:'Общая премия за месяц', total, totalText:rub(total),
-          sub:'Сумма всех премий по KPI',
-          sections:[{ title:'Расчёт премий', rows:[
-            { label:`Премия за ТО (${pct(to)})`, note: to >= 95 && to < 98 ? '≥ 95% и < 98% → 5 000 ₽' : to >= 98 && to <= 102.9 ? '≥ 98% и ≤ 102,9% → 10 000 ₽' : to > 102.9 ? '> 102,9% → 15 000 ₽' : '< 95% → 0 ₽', value:bonusTO, text:rub(bonusTO) },
-            { label:`Тайный покупатель (${pct(tp)})`, note: tp >= 85 && tp < 90 ? '≥ 85% и < 90% → 1 500 ₽' : tp >= 90 ? '≥ 90% → 3 000 ₽' : '< 85% → 0 ₽', value:bonusTP, text:rub(bonusTP) },
-            { label:`АТО+СГИ (${pct(ato)})`, note: ato >= 85 && ato <= 95 ? '≥ 85% и ≤ 95% → 1 500 ₽' : ato > 95 ? '> 95% → 3 000 ₽' : '< 85% → 0 ₽', value:bonusATO, text:rub(bonusATO) },
-            { label:`HR-индекс (${pct(hr)})`, note: hr >= 80 && hr <= 85 ? '≥ 80% и ≤ 85% → 2 000 ₽' : hr > 85 ? '> 85% → 4 000 ₽' : '< 80% → 0 ₽', value:bonusHR, text:rub(bonusHR) },
-            { label:`Отзывы (${fmtNum(feedback, feedback % 1 ? 1 : 0)} на 10 000 чеков)`, note: feedback > 3 && feedback < 6 ? '> 3 и < 6 → 1 500 ₽' : feedback <= 3 ? '≤ 3 → 3 000 ₽' : '≥ 6 → 0 ₽', value:bonusFeedback, text:rub(bonusFeedback) }
-          ]}]
-        };
-      },
       povar(v){
         const baseRate=v.baseRate, to=v.to, hours=v.hours;
         const nightHours=v.povar_night_hours;
@@ -624,7 +598,7 @@
       const roleLine = state.role ? `<div class="rc-row"><span class="l rc-m">Должность</span></div><div>${esc(ROLES[state.role].name)}</div><hr class="rc-cut">` : '';
       r.innerHTML = head(new Date().toLocaleDateString('ru-RU')) + '<hr class="rc-cut">' + roleLine
         + (err ? `<div class="rc-c rc-empty"><div class="rc-err">НЕ ХВАТАЕТ ДАННЫХ</div>${esc(err)}</div>`
-               : `<div class="rc-c rc-empty">${state.role ? 'Заполни поля и нажми<br>«Рассчитать»' : 'Выбери должность,<br>и здесь появится расчёт'}</div>`);
+               : `<div class="rc-c rc-empty">${!state.role ? 'Выбери должность,<br>и здесь появится расчёт' : CALC[state.role] ? 'Заполни поля и нажми<br>«Рассчитать»' : 'Расчёт пока недоступен'}</div>`);
       $('#sideActions').hidden = true;
     }
     function renderReceipt(r){
@@ -641,6 +615,7 @@
 
     function calculate(){
       if (!state.role){ toast('Сначала выбери должность'); return; }
+      if (!CALC[state.role]) return;
       $$('.row.invalid').forEach(el => el.classList.remove('invalid'));
       const { values, errors } = collect();
       if (errors.length){
@@ -717,7 +692,7 @@
 
     // мобильная панель «Рассчитать»: когда основная кнопка и чек вне экрана
     const vis = { calc:false, side:false };
-    function updateBar(){ $('#mbar').classList.toggle('show', !!state.role && !vis.calc && !vis.side); }
+    function updateBar(){ $('#mbar').classList.toggle('show', Boolean(CALC[state.role]) && !vis.calc && !vis.side); }
     new IntersectionObserver(([en]) => { vis.calc = en.isIntersecting; updateBar(); }).observe($('#calcBtn'));
     new IntersectionObserver(([en]) => { vis.side = en.isIntersecting; updateBar(); }).observe($('#side'));
 
