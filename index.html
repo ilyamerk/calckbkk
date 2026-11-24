@@ -74,7 +74,7 @@
     .top p{color:var(--muted);margin-top:6px;max-width:560px}
 
     /* ===== Должности ===== */
-    .roles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:20px}
+    .roles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:20px}
     @media (max-width:860px){.roles{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .role{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px 14px;min-height:68px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel);transition:border-color .12s,background .12s}
     .role:hover{border-color:var(--rule-strong)}
@@ -115,10 +115,11 @@
     /* поле с единицей */
     .num{position:relative}
     .num input{width:100%;height:var(--h);padding:0 52px 0 12px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--field);font-family:var(--mono);font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
+    .num select{width:100%;height:var(--h);padding:0 12px;border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--field);color:inherit;font-size:16px}
     .num input::placeholder{color:var(--muted);opacity:.5}
     .num input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
     .num .u{position:absolute;right:0;top:0;bottom:0;width:44px;display:grid;place-items:center;border-left:1px solid var(--rule);color:var(--muted);font-size:13px;pointer-events:none}
-    .row.invalid .num input,.row.invalid .stepper,.row.invalid .seg{border-color:var(--danger);background:var(--danger-bg)}
+    .row.invalid .num input,.row.invalid .num select,.row.invalid .stepper,.row.invalid .seg{border-color:var(--danger);background:var(--danger-bg)}
 
     /* степпер */
     .stepper{display:grid;grid-template-columns:var(--h) minmax(0,1fr) var(--h);height:var(--h);border:1px solid var(--rule-strong);border-radius:var(--r);background:var(--field);overflow:hidden}
@@ -205,7 +206,8 @@
     </header>
 
     <div class="roles" role="radiogroup" aria-label="Должность" id="roles">
-      <button type="button" class="role" role="radio" aria-checked="false" data-role="zam"><b>Заместитель директора</b><span>премия за месяц</span></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="zamHall"><b>Заместитель директора по залу</b><span>расчёт за смену</span></button>
+      <button type="button" class="role" role="radio" aria-checked="false" data-role="zamBar"><b>Заместитель директора по бару</b><span>расчёт за смену</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="povar"><b>Повар</b><span>смена и доплата АТО за месяц</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="cashier"><b>Кассир / Бариста</b><span>по положению с 01.11.2026</span></button>
       <button type="button" class="role" role="radio" aria-checked="false" data-role="others"><b>Другие должности</b><span>ст. кассир, зал, повар-универсал</span></button>
@@ -242,23 +244,36 @@
     'use strict';
 
     const DIR = ' Эту информацию ты можешь уточнить у своего директора.';
+    const deputyShiftFields = [
+      { id:'deputy_hours', type:'num', unit:'ч', max:24, positive:true, hours:true, label:'Длительность смены', copy:'Часы смены' },
+      { id:'deputy_night', type:'num', unit:'ч', max:24, default:0, hours:true, label:'Из них часов с 23:15 до 06:30', copy:'Ночные часы' },
+    ];
+    const deputyKpiFields = [
+      { id:'deputy_sales', type:'num', unit:'₽', label:'Фактический товарооборот кафе за смену', copy:'Фактический ТО (₽)' },
+      { id:'deputy_plan', type:'num', unit:'%', label:'Выполнение плана ТО за смену', copy:'Выполнение плана ТО (%)',
+        hint:'Ниже 95% — 0% от ТО. От 95% до 100% — 0,2%. От 100% — 0,4%.' },
+      { id:'deputy_tp', type:'num', unit:'%', max:100, label:'Оценка тайного покупателя', copy:'Тайный покупатель (%)' },
+      { id:'deputy_complaints', type:'num', unit:'шт', int:true, label:'Подтверждённые жалобы за смену', copy:'Подтверждённые жалобы' },
+    ];
+    const deputyRole = (name, fields) => ({
+      name,
+      groups: [
+        { title:'Смена', fields:deputyShiftFields },
+        { title:'Показатели КПИ за смену', fields:[...deputyKpiFields, ...fields] },
+      ],
+    });
     const ROLES = {
-      zam: {
-        name: 'Заместитель директора',
-        title: 'Показатели за месяц',
-        groups: [{ title: null, fields: [
-          { id:'zam_to', type:'num', unit:'%', label:'На сколько процентов выполнен план по ТО за месяц?', copy:'Процент выполнения плана по ТО (%)',
-            hint:'Процент выполнения плана по товарообороту за месяц. Например, если план был 100 000 ₽, а лавка заработала 95 000 ₽, введи 95.' },
-          { id:'zam_tp', type:'num', unit:'%', label:'На сколько процентов пройдена проверка Тайного покупателя?', copy:'Процент проверки Тайного покупателя (%)',
-            hint:'Оценка качества обслуживания, которую ставит тайный покупатель. Укажи процент прохождения чек-листа.' },
-          { id:'zam_ato', type:'num', unit:'%', label:'Процент прохождения АТО+СГИ', copy:'Процент прохождения АТО+СГИ (%)',
-            hint:'АТО+СГИ — показатели аудита торговой точки и соблюдения санитарных норм. Укажи процент выполнения этих стандартов за месяц.' },
-          { id:'zam_hr', type:'num', unit:'%', label:'HR-индекс лавки за месяц', copy:'Процент HR-индекса (%)',
-            hint:'Итоговый ежемесячный показатель HR-индекса.' },
-          { id:'zam_feedback', type:'num', unit:'шт', label:'Отрицательных отзывов на 10 000 чеков', copy:'Отрицательные отзывы на 10 000 чеков', full:true,
-            hint:'Количество отрицательных отзывов за месяц в пересчёте на 10 000 чеков. Например, если было 2 отзыва на 5 000 чеков, введи 4.' }
-        ]}]
-      },
+      zamHall: deputyRole('Заместитель директора по залу', [
+        { id:'deputy_display', type:'num', unit:'%', max:100, label:'Наполненность витрины', copy:'Наполненность витрины (%)' },
+        { id:'deputy_ato_hall', type:'num', unit:'%', max:100, label:'Прохождение АТО + СГИ', copy:'АТО + СГИ (%)' },
+        { id:'deputy_poisoning', type:'yn', label:'Была подтверждённая жалоба на отравление?', copy:'Подтверждённая жалоба на отравление' },
+      ]),
+      zamBar: deputyRole('Заместитель директора по бару', [
+        { id:'deputy_coffee', type:'num', unit:'%', label:'Выполнение показателя «Чек кофе РКМ»', copy:'Чек кофе РКМ (%)' },
+        { id:'deputy_ticket', type:'select', label:'Тикет открытия смены и настройки кофе', copy:'Тикет',
+          options:{ red:'Красный / отсутствует', yellow:'Жёлтый', green:'Зелёный' } },
+        { id:'deputy_ato_bar', type:'num', unit:'%', max:100, label:'Прохождение АТО ТБ', copy:'АТО ТБ (%)' },
+      ]),
       povar: {
         name: 'Повар',
         title: 'Параметры смены',
@@ -362,6 +377,7 @@
 
     /* ================= ФОРМА ================= */
     function ctrlHTML(f){
+      if (f.type === 'select') return `<div class="num"><select id="${f.id}"><option value="">Выбери вариант</option>${Object.entries(f.options).map(([key, label]) => `<option value="${esc(key)}">${esc(label)}</option>`).join('')}</select></div>`;
       if (f.type === 'yn') return `<div class="seg" role="radiogroup" aria-labelledby="${f.id}_lbl" data-yn="${f.id}">
           <button type="button" role="radio" aria-checked="false" data-v="yes">Да</button><button type="button" role="radio" aria-checked="false" data-v="no">Нет / не знаю</button></div>`;
       if (f.type === 'step') return `<div class="stepper">
@@ -432,6 +448,11 @@
         if (f.type === 'yn'){ const v = state.values[f.id] || ''; if (!v) errors.push([f.id, 'Выбери «Да» или «Нет»']); out[f.id] = v; return; }
         if (f.dep && state.values[f.dep] !== 'yes'){ out[f.id] = null; return; }
         const raw = $('#'+f.id).value.trim(), n = parseNum(raw);
+        if (f.type === 'select'){
+          if (!Object.hasOwn(f.options, raw)) errors.push([f.id, 'Выбери вариант']);
+          out[f.id] = raw;
+          return;
+        }
         if (raw === '')  return errors.push([f.id, 'Заполни поле']);
         if (!Number.isFinite(n))    return errors.push([f.id, 'Нужно число, например 95 или 95,5']);
         if (n < 0)       return errors.push([f.id, 'Не может быть меньше нуля']);
@@ -452,30 +473,60 @@
         if (out.others_total_hours < out.others_shift_length - out.cashier_night_hours)
           errors.push(['others_total_hours', 'Часы команды должны включать твои часы для KPI']);
       }
+      if (state.role === 'zamHall' || state.role === 'zamBar'){
+        if (out.deputy_night > out.deputy_hours)
+          errors.push(['deputy_night', 'Ночных часов не может быть больше длительности смены']);
+      }
       return { values: out, errors };
     }
 
     /* ================= ФОРМУЛЫ (повар, кассир и бариста — положение от 01.11.2026) ================= */
+    function deputyShiftKpi(v, factors){
+      const share = v.deputy_plan < 95 ? 0 : v.deputy_plan < 100 ? 0.002 : 0.004;
+      const baseFund = v.deputy_sales * share;
+      const fund = factors.reduce((amount, { coefficient }) => amount * coefficient, baseFund);
+      const kpiHours = v.deputy_hours - v.deputy_night;
+      const base = 350 * v.deputy_hours;
+      const total = kpiHours > 0 ? fund : 0;
+      return {
+        totalLabel:'КПИ за смену', total, totalText:rub(total),
+        sub:kpiHours > 0 ? 'По формуле положения' : 'Вся смена в периоде без КПИ',
+        sections:[
+          { title:'Фонд премии за смену', rows:[
+            { label:`Фонд от ТО (${pct(share * 100)} от факта)`, text:rub(baseFund) },
+            ...factors.map(({ label, coefficient }) => ({ label, text:'× ' + fmtNum(coefficient, 2) })),
+            { label:'Итоговый фонд', text:rub(fund), total:true },
+          ]},
+          { title:'Оплата по ставке и часы', rows:[
+            { label:`350 ₽/ч за ${h1(v.deputy_hours)}`, text:rub(base) },
+            { label:'Часы с 23:15 до 06:30 без КПИ', text:h1(v.deputy_night) },
+            { label:'Часы для КПИ', text:h1(kpiHours) },
+          ]},
+        ],
+      };
+    }
+
+    const deputyCommonFactors = v => [
+      { label:'Подтверждённые жалобы', coefficient:v.deputy_complaints === 0 ? 1 : 0.75 },
+      { label:'Тайный покупатель', coefficient:v.deputy_tp < 85 ? 0 : v.deputy_tp < 100 ? 1 : 1.2 },
+    ];
+
     const CALC = {
-      zam(v){
-        const to=v.zam_to, tp=v.zam_tp, ato=v.zam_ato, hr=v.zam_hr, feedback=v.zam_feedback;
-        const bonusTO = to >= 95 && to < 98 ? 5000 : to >= 98 && to <= 102.9 ? 10000 : to > 102.9 ? 15000 : 0;
-        const bonusTP = tp >= 85 && tp < 90 ? 1500 : tp >= 90 ? 3000 : 0;
-        const bonusATO = ato >= 85 && ato <= 95 ? 1500 : ato > 95 ? 3000 : 0;
-        const bonusHR = hr >= 80 && hr <= 85 ? 2000 : hr > 85 ? 4000 : 0;
-        const bonusFeedback = feedback > 3 && feedback < 6 ? 1500 : feedback <= 3 ? 3000 : 0;
-        const total = bonusTO + bonusTP + bonusATO + bonusHR + bonusFeedback;
-        return {
-          totalLabel:'Общая премия за месяц', total, totalText:rub(total),
-          sub:'Сумма всех премий по KPI',
-          sections:[{ title:'Расчёт премий', rows:[
-            { label:`Премия за ТО (${pct(to)})`, note: to >= 95 && to < 98 ? '≥ 95% и < 98% → 5 000 ₽' : to >= 98 && to <= 102.9 ? '≥ 98% и ≤ 102,9% → 10 000 ₽' : to > 102.9 ? '> 102,9% → 15 000 ₽' : '< 95% → 0 ₽', value:bonusTO, text:rub(bonusTO) },
-            { label:`Тайный покупатель (${pct(tp)})`, note: tp >= 85 && tp < 90 ? '≥ 85% и < 90% → 1 500 ₽' : tp >= 90 ? '≥ 90% → 3 000 ₽' : '< 85% → 0 ₽', value:bonusTP, text:rub(bonusTP) },
-            { label:`АТО+СГИ (${pct(ato)})`, note: ato >= 85 && ato <= 95 ? '≥ 85% и ≤ 95% → 1 500 ₽' : ato > 95 ? '> 95% → 3 000 ₽' : '< 85% → 0 ₽', value:bonusATO, text:rub(bonusATO) },
-            { label:`HR-индекс (${pct(hr)})`, note: hr >= 80 && hr <= 85 ? '≥ 80% и ≤ 85% → 2 000 ₽' : hr > 85 ? '> 85% → 4 000 ₽' : '< 80% → 0 ₽', value:bonusHR, text:rub(bonusHR) },
-            { label:`Отзывы (${fmtNum(feedback, feedback % 1 ? 1 : 0)} на 10 000 чеков)`, note: feedback > 3 && feedback < 6 ? '> 3 и < 6 → 1 500 ₽' : feedback <= 3 ? '≤ 3 → 3 000 ₽' : '≥ 6 → 0 ₽', value:bonusFeedback, text:rub(bonusFeedback) }
-          ]}]
-        };
+      zamHall(v){
+        return deputyShiftKpi(v, [
+          ...deputyCommonFactors(v),
+          { label:'Наполненность витрины', coefficient:v.deputy_display < 90 ? 0.5 : v.deputy_display < 98 ? 1 : 1.2 },
+          { label:'АТО + СГИ', coefficient:v.deputy_ato_hall < 85 ? 0.5 : v.deputy_ato_hall <= 90 ? 0.75 : 1 },
+          { label:'Подтверждённая жалоба на отравление', coefficient:v.deputy_poisoning === 'yes' ? 0.5 : 1 },
+        ]);
+      },
+      zamBar(v){
+        return deputyShiftKpi(v, [
+          ...deputyCommonFactors(v),
+          { label:'Чек кофе РКМ', coefficient:v.deputy_coffee < 95 ? 0.75 : v.deputy_coffee < 110 ? 1 : 1.2 },
+          { label:'Тикет открытия и настройки кофе', coefficient:{ red:0.5, yellow:1, green:1.2 }[v.deputy_ticket] },
+          { label:'АТО ТБ', coefficient:v.deputy_ato_bar < 85 ? 0.5 : v.deputy_ato_bar < 100 ? 1 : 1.2 },
+        ]);
       },
       povar(v){
         const baseRate=v.baseRate, to=v.to, hours=v.hours;
@@ -649,7 +700,7 @@
         showEmpty(errors.length === 1 ? 'Заполни отмеченное поле' : `Заполни отмеченные поля: ${errors.length}`);
         const first = $(`.row[data-id="${errors[0][0]}"]`);
         scrollTo({ top: first.getBoundingClientRect().top + scrollY - 24, behavior:'smooth' });
-        const inp = $('input', first); if (inp) setTimeout(() => inp.focus({ preventScroll:true }), 350);
+        const inp = $('input, select', first); if (inp) setTimeout(() => inp.focus({ preventScroll:true }), 350);
         return;
       }
       const r = CALC[state.role](values);
@@ -666,7 +717,7 @@
       fieldsOf(state.role).forEach(f => {
         const v = values[f.id];
         if (v === null || v === undefined || v === '') return;
-        lines.push(`${f.copy}: ${f.type === 'yn' ? (v === 'yes' ? 'Да' : 'Нет/Не знаю') : f.hours ? fmtNum(v, 1) : fmtNum(v, v % 1 ? 2 : 0)}`);
+        lines.push(`${f.copy}: ${f.type === 'yn' ? (v === 'yes' ? 'Да' : 'Нет/Не знаю') : f.type === 'select' ? f.options[v] : f.hours ? fmtNum(v, 1) : fmtNum(v, v % 1 ? 2 : 0)}`);
       });
       lines.push('', 'Результат расчёта:');
       result.sections.forEach(s => { lines.push(s.title); s.rows.forEach(x => lines.push(`  ${x.label}: ${x.text}${x.note ? ` (${x.note})` : ''}`)); });
