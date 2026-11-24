@@ -245,11 +245,8 @@
 
     const DIR = ' Эту информацию ты можешь уточнить у своего директора.';
     const deputyShiftFields = [
-      { id:'deputy_rate', type:'num', unit:'₽/ч', default:350, positive:true, label:'Часовая ставка', copy:'Ставка (₽/ч)' },
       { id:'deputy_hours', type:'num', unit:'ч', max:24, positive:true, hours:true, label:'Длительность смены', copy:'Часы смены' },
       { id:'deputy_night', type:'num', unit:'ч', max:24, default:0, hours:true, label:'Из них часов с 23:15 до 06:30', copy:'Ночные часы' },
-      { id:'deputy_team', type:'num', unit:'ч', hours:true, label:'Общие часы заместителей этой должности для КПИ', copy:'Общие часы для КПИ',
-        hint:'Сложи часы заместителей этой должности за смену, включая свои. Часы с 23:15 до 06:30 исключи. Если работал один, укажи свои часы без ночных.' },
     ];
     const deputyKpiFields = [
       { id:'deputy_sales', type:'num', unit:'₽', label:'Фактический товарооборот кафе за смену', copy:'Фактический ТО (₽)' },
@@ -479,36 +476,31 @@
       if (state.role === 'zamHall' || state.role === 'zamBar'){
         if (out.deputy_night > out.deputy_hours)
           errors.push(['deputy_night', 'Ночных часов не может быть больше длительности смены']);
-        if (out.deputy_team < out.deputy_hours - out.deputy_night)
-          errors.push(['deputy_team', 'Общие часы должны включать твои часы для КПИ']);
       }
       return { values: out, errors };
     }
 
     /* ================= ФОРМУЛЫ (повар, кассир и бариста — положение от 01.11.2026) ================= */
-    function deputyPay(v, factors){
+    function deputyShiftKpi(v, factors){
       const share = v.deputy_plan < 95 ? 0 : v.deputy_plan < 100 ? 0.002 : 0.004;
       const baseFund = v.deputy_sales * share;
       const fund = factors.reduce((amount, { coefficient }) => amount * coefficient, baseFund);
       const kpiHours = v.deputy_hours - v.deputy_night;
-      const bonus = v.deputy_team > 0 ? fund / v.deputy_team * kpiHours : 0;
-      const base = v.deputy_rate * v.deputy_hours;
-      const total = base + bonus;
+      const base = 350 * v.deputy_hours;
+      const total = kpiHours > 0 ? fund : 0;
       return {
-        totalLabel:'Зарплата за смену', total, totalText:rub(total),
-        sub:`База ${rub(base)} + премия ${rub(bonus)}`,
+        totalLabel:'КПИ за смену', total, totalText:rub(total),
+        sub:kpiHours > 0 ? 'По формуле положения' : 'Вся смена в периоде без КПИ',
         sections:[
           { title:'Фонд премии за смену', rows:[
             { label:`Фонд от ТО (${pct(share * 100)} от факта)`, text:rub(baseFund) },
             ...factors.map(({ label, coefficient }) => ({ label, text:'× ' + fmtNum(coefficient, 2) })),
             { label:'Итоговый фонд', text:rub(fund), total:true },
           ]},
-          { title:'Твоя зарплата', rows:[
-            { label:`База за все ${h1(v.deputy_hours)}`, text:rub(base) },
+          { title:'Оплата по ставке и часы', rows:[
+            { label:`350 ₽/ч за ${h1(v.deputy_hours)}`, text:rub(base) },
             { label:'Часы с 23:15 до 06:30 без КПИ', text:h1(v.deputy_night) },
-            { label:'Твои часы для КПИ', text:h1(kpiHours) },
-            { label:'Общие часы для КПИ', text:h1(v.deputy_team) },
-            { label:'Премия за смену', note:'Фонд ÷ общие часы для КПИ × твои часы для КПИ', text:rub(bonus) },
+            { label:'Часы для КПИ', text:h1(kpiHours) },
           ]},
         ],
       };
@@ -521,7 +513,7 @@
 
     const CALC = {
       zamHall(v){
-        return deputyPay(v, [
+        return deputyShiftKpi(v, [
           ...deputyCommonFactors(v),
           { label:'Наполненность витрины', coefficient:v.deputy_display < 90 ? 0.5 : v.deputy_display < 98 ? 1 : 1.2 },
           { label:'АТО + СГИ', coefficient:v.deputy_ato_hall < 85 ? 0.5 : v.deputy_ato_hall <= 90 ? 0.75 : 1 },
@@ -529,7 +521,7 @@
         ]);
       },
       zamBar(v){
-        return deputyPay(v, [
+        return deputyShiftKpi(v, [
           ...deputyCommonFactors(v),
           { label:'Чек кофе РКМ', coefficient:v.deputy_coffee < 95 ? 0.75 : v.deputy_coffee < 110 ? 1 : 1.2 },
           { label:'Тикет открытия и настройки кофе', coefficient:{ red:0.5, yellow:1, green:1.2 }[v.deputy_ticket] },
